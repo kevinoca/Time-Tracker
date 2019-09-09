@@ -25,5 +25,9 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "author": {
+    "name": "Kevin Oca",
+    "email": "kevinoca@gmail.com"
+  }
 }
