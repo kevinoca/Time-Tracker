@@ -16,7 +16,7 @@ export default class Home extends Component {
 
 
         this.times = new Map()
-
+        
     }
 
     saveTime = type => {
@@ -74,8 +74,6 @@ export default class Home extends Component {
     }
 
     render() {
-
-        console.info(this.state)
 
         return (
 

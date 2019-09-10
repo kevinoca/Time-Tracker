@@ -10,41 +10,48 @@ import { Route, Switch, Redirect } from "react-router-dom";
 
 export default class App extends Component {
 
+  constructor(props) {
+
+    super(props)
+
+    this.state = {
+      user: undefined,
+      authenticated: false,
+    }
+
+  }
+
+  performSignIn = user => {
+    this.setState({ user: user, authenticated: true })
+    console.log("TCL: user", user);
+  }
+
   render() {
 
-    const isLoggedIn = false
+    const { user, authenticated } = this.state
 
     return (
 
-      <>
-
-        {/* <Switch>
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/login" component={Login} />
-          <Redirect from="/" to="/login" />
-          <Route exact path="/home" component={Home} />
-          <Route exact path="/dashboard" component={Dashboard} />
-          <Route exact path="/other" component={Other} />
-          <Route component={PageNotFound} />
-        </Switch> */}
-
-        <Switch>
-          <Route exact path="/" render={() => (
-            isLoggedIn
-              ? (<Redirect to="/home" />)
-              : (<Redirect to="/login" />)
-          )} />
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/home" component={Home} />
-          <Route exact path="/dashboard" component={Dashboard} />
-          <Route exact path="/other" component={Other} />
-          <Route component={PageNotFound} />
-        </Switch>
-
-      </>
+      <Switch>
+        <Route exact path="/" render={(props) => (authenticated) ? <Redirect to="/home" /> : <Login {...props} performSignIn={this.performSignIn} />} />
+        <Route exact path="/login" render={(props) => (authenticated) ? <Redirect to="/home" /> : <Login {...props} performSignIn={this.performSignIn} />} />
+        <PrivateRouter authenticated={authenticated} path='/home' component={Home} user={user} />
+        <PrivateRouter authenticated={authenticated} path='/other' component={Other} user={user} />
+        <PrivateRouter authenticated={authenticated} path='/dashboard' component={Dashboard} user={user} />
+        <Route component={PageNotFound} />
+      </Switch>
 
     )
 
   }
 
 }
+
+const PrivateRouter = ({ component: Component, authenticated, ...rest }) => {
+  return (
+    <Route {...rest} render={(props) => (authenticated)
+      ? <Component {...rest} {...props} />
+      : <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
+    } />
+  )
+};

@@ -92,7 +92,7 @@ class Login extends Component {
                 text: `User ${userCredentials.email} logged successfully!`,
                 icon: "success",
                 button: "OK!",
-            }).then(() => this.props.history.push("/home"))
+            }).then(() => this.props.performSignIn(userCredentials))
 
         }
 
