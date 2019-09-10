@@ -15,16 +15,13 @@ export default class App extends Component {
     super(props)
 
     this.state = {
-      user: undefined,
       authenticated: false,
+      user: undefined,
     }
 
   }
 
-  performSignIn = user => {
-    this.setState({ user: user, authenticated: true })
-    console.log("TCL: user", user);
-  }
+  performSignIn = user => this.setState({ authenticated: true, user })
 
   render() {
 

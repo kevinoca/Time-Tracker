@@ -14,7 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import swal from 'sweetalert'
 
-
+import Keys from "./keys"//this file is untracked as it's used to keep the credentials secret
 
 const styles = theme => ({
     main: {
@@ -54,51 +54,52 @@ class Login extends Component {
 
         super(props)
 
-        this.state = {
-            email: "",
-            password: "",
-            remember: false
-        }
+        this.state = {}
 
     }
 
-    handleInputChange = event => {
-
-        const { value, id } = event.target
-
-        this.setState({ [id]: value })
-
-    }
-
-    handleInputRemember = () => this.setState({ remember: !this.state.remember })
-
-    validateCredentials = event => {
+    onSubmitFormData = event => {
 
         event.preventDefault()
 
-        const { email, password, remember } = this.state
-
-        const userCredentials = {
-            email,
-            password,
-            remember
+        const formData = {}
+        new FormData(event.target).forEach((value, key) => formData[key] = value)
+        if (formData["remember"] === undefined) {
+            formData["remember"] = false
+        } else {
+            formData["remember"] = Boolean(formData["remember"])
         }
+
+        this.validateCredentials(formData)
+
         //todo is remember is true, it should remember users data when they come back to the aplication in a stablished period of time
+
+    }
+
+    validateCredentials = credentials => {
+
+        const { email, password, remember } = credentials
+
+        if (remember) {
+            //then attach the user session to the navigator to avoid login when user leaves the app and comes back.
+        }
 
         const navigateToLogin = () => {
 
             swal({
                 title: "Nagivating to Home",
-                text: `User ${userCredentials.email} logged successfully!`,
+                text: `User logged in successfully!`,
                 icon: "success",
                 button: "OK!",
-            }).then(() => this.props.performSignIn(userCredentials))
+            }).then(() => this.props.performSignIn(credentials))
 
         }
 
         const showErrorDialog = () => swal("Oops", "Something went wrong!", "error");
 
-        (userCredentials.email == "tos@gmail.com" && userCredentials.password == "tos123") ? navigateToLogin() : showErrorDialog()
+        (email === Keys.email && password == Keys.password)
+            ? navigateToLogin()
+            : showErrorDialog()
 
     }
 
@@ -113,17 +114,17 @@ class Login extends Component {
                 <Paper className={classes.paper}>
                     <Avatar className={classes.avatar}><LockOutlinedIcon /></Avatar>
                     <Typography component="h1" variant="h5"> Sign in</Typography>
-                    <form className={classes.form} onSubmit={e => this.validateCredentials(e)}>
+                    <form className={classes.form} onSubmit={e => this.onSubmitFormData(e)}>
                         <FormControl margin="normal" required fullWidth>
                             <InputLabel htmlFor="email">Email Address</InputLabel>
-                            <Input id="email" name="email" type="email" value={this.state.email} autoFocus onChange={data => this.handleInputChange(data)} />
+                            <Input id="email" name="email" type="email" defaultValue="" autoFocus />
                         </FormControl>
                         <FormControl margin="normal" required fullWidth>
                             <InputLabel htmlFor="password">Password</InputLabel>
-                            <Input name="password" type="password" id="password" value={this.state.password} autoFocus onChange={data => this.handleInputChange(data)} />
+                            <Input name="password" type="password" id="password" defaultValue="" />
                         </FormControl>
                         <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" id="remember" onClick={() => this.handleInputRemember()} />}
+                            control={<Checkbox defaultChecked={false} value="true" name="remember" color="primary" id="remember" />}
                             label="Remember me"
                             id="remember"
                         />
